@@ -98,8 +98,22 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
-          double steer_value;
-          double throttle_value;
+          Eigen::VectorXd ptsxn = Eigen::VectorXd::Map(ptsx.data(), ptsx.size());
+          Eigen::VectorXd ptsyn = Eigen::VectorXd::Map(ptsy.data(), ptsy.size());
+          auto coeffs = polyfit(ptsxn, ptsyn, 3);
+          // calculate the cross track error
+          double cte = polyeval(coeffs, 0) - py;
+          // calculate the orientation error
+          double epsi = -atan(coeffs[1]);
+
+          Eigen::VectorXd state(6);
+          state << px, py, psi, v, cte, epsi;
+          auto vars = mpc.Solve(state, coeffs);
+          // std::cout << "VARS " << vars[2] << " " << vars[3] << " " << vars[6] << std::endl;
+
+          double steer_value = 0;//vars[6];
+          double throttle_value = vars[7];
+          std::cout << "STEER: " << steer_value << " THROTTLE: " << throttle_value << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
