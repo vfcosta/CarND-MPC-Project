@@ -77,7 +77,7 @@ int main() {
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
-    cout << sdata << endl;
+    // cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
       if (s != "") {
@@ -102,17 +102,17 @@ int main() {
           Eigen::VectorXd ptsyn = Eigen::VectorXd::Map(ptsy.data(), ptsy.size());
           auto coeffs = polyfit(ptsxn, ptsyn, 3);
           // calculate the cross track error
-          double cte = polyeval(coeffs, 0) - py;
+          double cte = polyeval(coeffs, px) - py;
           // calculate the orientation error
-          double epsi = -atan(coeffs[1]);
+          // double epsi = psi - atan(coeffs[1]);
+          double epsi = psi - atan(coeffs[1] + (2 * coeffs[2] * px) + (3 * coeffs[3]* (px*px)));
 
           Eigen::VectorXd state(6);
           state << px, py, psi, v, cte, epsi;
           auto vars = mpc.Solve(state, coeffs);
-          // std::cout << "VARS " << vars[2] << " " << vars[3] << " " << vars[6] << std::endl;
 
-          double steer_value = 0;//vars[6];
-          double throttle_value = vars[7];
+          double steer_value = -vars[0];
+          double throttle_value = vars[1];
           std::cout << "STEER: " << steer_value << " THROTTLE: " << throttle_value << std::endl;
 
           json msgJson;
@@ -141,7 +141,7 @@ int main() {
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+          // std::cout << msg << std::endl;
           // Latency
           // The purpose is to mimic real driving conditions where
           // the car does actuate the commands instantly.
