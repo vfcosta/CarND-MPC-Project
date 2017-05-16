@@ -92,6 +92,18 @@ int main() {
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
 
+          // convert reference points to vehicle coordinate system
+          for(int k = 0; k<ptsx.size(); k++) {
+            double x = ptsx[k] - px;
+            double y = ptsy[k] - py;
+            ptsx[k] = x * cos(-psi) - y * sin(-psi);
+            ptsy[k] = x * sin(-psi) + y * cos(-psi);
+          }
+          // consider px and py as origin
+          px = 0;
+          py = 0;
+          psi = 0;
+
           /*
           * TODO: Calculate steeering angle and throttle using MPC.
           *
@@ -111,23 +123,23 @@ int main() {
           state << px, py, psi, v, cte, epsi;
           auto vars = mpc.Solve(state, coeffs);
 
-          double steer_value = -vars[0];
+          double steer_value = vars[0];
           double throttle_value = vars[1];
           std::cout << "STEER: " << steer_value << " THROTTLE: " << throttle_value << std::endl;
 
           json msgJson;
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = -steer_value;
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals = mpc.mpc_x_vals;
           vector<double> mpc_y_vals = mpc.mpc_y_vals;
-          for(int k = 0; k<mpc_x_vals.size(); k++) {
-            double x = mpc_x_vals[k] - px;
-            double y = mpc_y_vals[k] - py;
-            mpc_x_vals[k] = x * cos(-psi) - y * sin(-psi);
-            mpc_y_vals[k] = x * sin(-psi) + y * cos(-psi);
-          }
+          // for(int k = 0; k<mpc_x_vals.size(); k++) {
+          //   double x = mpc_x_vals[k] - px;
+          //   double y = mpc_y_vals[k] - py;
+          //   mpc_x_vals[k] = x * cos(-psi) - y * sin(-psi);
+          //   mpc_y_vals[k] = x * sin(-psi) + y * cos(-psi);
+          // }
 
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
@@ -137,15 +149,17 @@ int main() {
           msgJson["mpc_y"] = mpc_y_vals;
 
           //Display the waypoints/reference line
-          vector<double> next_x_vals;
-          vector<double> next_y_vals;
+          // vector<double> next_x_vals;
+          // vector<double> next_y_vals;
           // convert to vehicle coordinate system to draw a reference line
-          for(int k = 0; k<ptsx.size(); k++) {
-            double x = ptsx[k] - px;
-            double y = ptsy[k] - py;
-            next_x_vals.push_back(x * cos(-psi) - y * sin(-psi));
-            next_y_vals.push_back(x * sin(-psi) + y * cos(-psi));
-          }
+          // for(int k = 0; k<ptsx.size(); k++) {
+          //   double x = ptsx[k] - px;
+          //   double y = ptsy[k] - py;
+          //   next_x_vals.push_back(x * cos(-psi) - y * sin(-psi));
+          //   next_y_vals.push_back(x * sin(-psi) + y * cos(-psi));
+          // }
+          vector<double> next_x_vals = ptsx;
+          vector<double> next_y_vals = ptsy;
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
