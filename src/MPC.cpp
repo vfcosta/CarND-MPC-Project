@@ -6,8 +6,8 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 10;
-double dt = 0.1;
+size_t N = 9;
+double dt = 0.10;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -25,7 +25,7 @@ double ref_cte = 0;
 double ref_epsi = 0;
 // NOTE: feel free to play around with this
 // or do something completely different
-double ref_v = 30;
+double ref_v = 60;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should to establish
@@ -61,21 +61,21 @@ class FG_eval {
     // TODO: Define the cost related the reference state and
     // any anything you think may be beneficial.
     for (int i = 0; i < N; i++) {
-      fg[0] += CppAD::pow(vars[cte_start + i] - ref_cte, 2);
-      fg[0] += CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
+      fg[0] += 5*CppAD::pow(vars[cte_start + i] - ref_cte, 2);
+      fg[0] += 2*CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
       fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
     for (int i = 0; i < N - 1; i++) {
-      fg[0] += 5*CppAD::pow(vars[delta_start + i], 2);
-      fg[0] += 5*CppAD::pow(vars[a_start + i], 2);
+      fg[0] += 20*CppAD::pow(vars[delta_start + i], 2);
+      fg[0] += 10*CppAD::pow(vars[a_start + i], 2);
     }
 
     // // Minimize the value gap between sequential actuations.
     for (int i = 0; i < N - 2; i++) {
-      fg[0] += 500*CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
-      fg[0] += 10*CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
+      fg[0] += 300*CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+      fg[0] += CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
     }
 
     //
