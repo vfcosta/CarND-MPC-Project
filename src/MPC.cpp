@@ -54,14 +54,14 @@ class FG_eval {
     // Reference State Cost
     // Define the cost related the reference state and its weight multipliers
     for (int i = 0; i < N; i++) {
-      fg[0] += 5*CppAD::pow(vars[cte_start + i] - ref_cte, 2);
+      fg[0] += 4*CppAD::pow(vars[cte_start + i] - ref_cte, 2);
       fg[0] += 2*CppAD::pow(vars[epsi_start + i] - ref_epsi, 2);
       fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
     }
 
     // Minimize the use of actuators.
     for (int i = 0; i < N - 1; i++) {
-      fg[0] += 20*CppAD::pow(vars[delta_start + i], 2);
+      fg[0] += 15*CppAD::pow(vars[delta_start + i], 2);
       fg[0] += 10*CppAD::pow(vars[a_start + i], 2);
     }
 
