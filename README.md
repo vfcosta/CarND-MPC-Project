@@ -3,6 +3,42 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Model Reflections
+
+This section describes the Model Predictive Control solution used for this project.
+Part of code used here was obtained from https://github.com/udacity/CarND-MPC-Quizzes.
+
+The cost for MPC was defined in [MPC.cpp#L54-L72](/src/MPC.cpp#L54-L72).
+The first loop define a set of cost equations related to a reference state (based on reference waypoints given as ground truth). Therefore, three strategies were used:
+* Cross track error [MPC.cpp#L57](/src/MPC.cpp#L57): influence the car to follow a reference;
+* Psi angle error [MPC.cpp#L58](/src/MPC.cpp#L58): influence the car to be oriented as the reference;
+* Reference velocity error: [MPC.cpp#L59](/src/MPC.cpp#L59): pursue the reference speed of 60mph.
+
+The next loop define a set of equations related to actuators:
+* Steering actuator [MPC.cpp#L64](/src/MPC.cpp#L64): minimize the use of steering in MPC solution;
+* Accelerator actuator [MPC.cpp#L65](/src/MPC.cpp#L65): minimize the use of acceleration in MPC solution.
+
+The final loop define a set of equations related to actuators between two sequential time steps:
+* Steering actuator [MPC.cpp#L70](/src/MPC.cpp#L70): minimize the variation of steering when driving;
+* Accelerator actuator [MPC.cpp#L71](/src/MPC.cpp#L71): minimize the variation of acceleration when driving.
+
+The model constrains were initialized and defined in [MPC.cpp#L74-L121](/src/MPC.cpp#L74-L121).
+Constrains are defined for each variable in the state, for each iteration `N_i`.
+Those constrains equations follow the bicycle model.
+
+The `N` and `dt` parameters was defined to handle the latency of 100ms used in simulation.
+So, `0.1` (100ms) was used for `dt`, to stay equivalent with simulator's latency. We tried smaller values for `dt` but the response time in curves became worse.
+For `N`, a value of `9` was used and proves to be sufficient to predict further into the future but not too much.
+Therefore, we simulate 0.9 seconds into the future.
+
+The MPC model described above was used in [main.cpp#L72](/src/main.cpp#L72).
+Reference waypoints given by the simulator were converted to vehicle coordinate system in [main.cpp#L95-L101](/src/main.cpp#L95-L101).
+
+After that, these converted reference points were used to fit a polynomial in [main.cpp#L112](/src/main.cpp#L112)
+Therefore, MPC model was applied based on the car coordinate system ([main.cpp#L122](/src/main.cpp#L122)).
+
+A sample video of the car driving around track was provided [here](/track1.ogv?raw=true).
+
 ## Dependencies
 
 * cmake >= 3.5
