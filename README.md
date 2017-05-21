@@ -12,7 +12,7 @@ The cost for MPC was defined in [MPC.cpp#L54-L72](/src/MPC.cpp#L54-L72).
 The first loop define a set of cost equations related to a reference state (based on reference waypoints given as ground truth). Therefore, three strategies were used:
 * Cross track error [MPC.cpp#L57](/src/MPC.cpp#L57): influence the car to follow a reference;
 * Psi angle error [MPC.cpp#L58](/src/MPC.cpp#L58): influence the car to be oriented as the reference;
-* Reference velocity error: [MPC.cpp#L59](/src/MPC.cpp#L59): pursue the reference speed of 60mph.
+* Reference velocity error: [MPC.cpp#L59](/src/MPC.cpp#L59): pursue the reference speed of 80mph.
 
 The next loop define a set of equations related to actuators:
 * Steering actuator [MPC.cpp#L64](/src/MPC.cpp#L64): minimize the use of steering in MPC solution;
