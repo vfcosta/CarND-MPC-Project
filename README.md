@@ -31,6 +31,9 @@ So, `0.1` (100ms) was used for `dt`, to stay equivalent with simulator's latency
 For `N`, a value of `9` was used and proves to be sufficient to predict further into the future but not too much.
 Therefore, we simulate 0.9 seconds into the future.
 
+So, the two first values obtained from MPC was accumulated and returned to be used as input to simulator.
+This proved to be a good way to handle simulated latency, once we use values for actuators that are two steps in the future.
+
 The MPC model described above was used in [main.cpp#L72](/src/main.cpp#L72).
 Reference waypoints given by the simulator were converted to vehicle coordinate system in [main.cpp#L95-L101](/src/main.cpp#L95-L101).
 
